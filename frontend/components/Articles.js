@@ -3,14 +3,19 @@ import { Navigate } from 'react-router-dom'
 import PT from 'prop-types'
 
 export default function Articles(props) {
-  // ✨ where are my props? Destructure them here
-
+  //$ ✨ where are my props? Destructure them here
+  const { articles } = props
+  const token = localStorage.getItem('token')
+  if (!token) {Navigate('http://localhost:9000/api/login')}
   // ✨ implement conditional logic: if no token exists
   // we should render a Navigate to login screen (React Router v.6)
-
+  
+  
   useEffect(() => {
+    props.getArticles()
     // ✨ grab the articles here, on first render only
-  })
+  }, [])
+  
 
   return (
     // ✨ fix the JSX: replace `Function.prototype` with actual functions
@@ -18,9 +23,9 @@ export default function Articles(props) {
     <div className="articles">
       <h2>Articles</h2>
       {
-        ![].length
+        !articles.length
           ? 'No articles yet'
-          : [].map(art => {
+          : articles.map(art => {
             return (
               <div className="article" key={art.article_id}>
                 <div>
