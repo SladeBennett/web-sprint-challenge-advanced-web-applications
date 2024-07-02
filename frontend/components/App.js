@@ -5,23 +5,26 @@ import LoginForm from './LoginForm'
 import Message from './Message'
 import ArticleForm from './ArticleForm'
 import Spinner from './Spinner'
+import axios from 'axios'
+
 
 const articlesUrl = 'http://localhost:9000/api/articles'
 const loginUrl = 'http://localhost:9000/api/login'
 
 export default function App() {
-  // ✨ MVP can be achieved with these states
   const [message, setMessage] = useState('')
   const [articles, setArticles] = useState([])
   const [currentArticleId, setCurrentArticleId] = useState()
   const [spinnerOn, setSpinnerOn] = useState(false)
+  
 
   // ✨ Research `useNavigate` in React Router v.6
   const navigate = useNavigate()
-  const redirectToLogin = () => { /* ✨ implement */ }
-  const redirectToArticles = () => { /* ✨ implement */ }
+  const redirectToLogin = () => { navigate(loginUrl) /* ✨ implement */ }
+  const redirectToArticles = () => { navigate(articlesUrl)/* ✨ implement */ }
 
   const logout = () => {
+    redirectToLogin()
     // ✨ implement
     // If a token is in local storage it should be removed,
     // and a message saying "Goodbye!" should be set in its proper state.
@@ -29,9 +32,20 @@ export default function App() {
     // using the helper above.
   }
 
-  const login = ({ username, password }) => {
+  const login = async ({ username, password }) => {
+    setMessage('')
+    setSpinnerOn(true)
+     try {
+      const { data } = await axios.post(
+        'http://localhost:9000/api/login/', { username, password }
+      )
+      localStorage.setItem('token', data.token)
+      redirectToArticles()
+     } catch (err) {
+      setMessage(err?.response?.data?.message || 'An error occurred. Please try again')
+     }
     // ✨ implement
-    // We should flush the message state, turn on the spinner
+    //$ We should flush the message state, turn on the spinner
     // and launch a request to the proper endpoint.
     // On success, we should set the token to local storage in a 'token' key,
     // put the server success message in its proper state, and redirect
@@ -78,7 +92,7 @@ export default function App() {
           <NavLink id="articlesScreen" to="/articles">Articles</NavLink>
         </nav>
         <Routes>
-          <Route path="/" element={<LoginForm />} />
+          <Route path="/" element={<LoginForm login={login}/>} />
           <Route path="articles" element={
             <>
               <ArticleForm />
@@ -90,4 +104,5 @@ export default function App() {
       </div>
     </>
   )
+  
 }
