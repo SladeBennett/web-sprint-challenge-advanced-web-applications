@@ -81,8 +81,8 @@ export default function App() {
           logout()
         }
       }
-      setSpinnerOn(false)
     }
+    setSpinnerOn(false)
     //$ ✨ implement
     //$ We should flush the message state, turn on the spinner
     //$ and launch an authenticated request to the proper endpoint.
@@ -122,18 +122,15 @@ export default function App() {
   }
 
 
-  const updateArticle = async ({ article_id, article }) => {
-    console.log(article)
-    
+  const updateArticle = async ( currentArticleId, article ) => {
     setMessage('')
     if (!token) {
       logout()
     } else {
-      setCurrentArticleId(article_id)
-      //setSpinnerOn(true)
+      console.log(1, currentArticleId, article)
       try {
         const response = await axios.put(
-          `http://localhost:9000/api/articles/${article_id}`,
+          `http://localhost:9000/api/articles/${currentArticleId}`,
           article,
           { headers: { Authorization: token } }
         )
@@ -144,11 +141,11 @@ export default function App() {
           logout()
         }
       }
+      setCurrentArticleId()
       getArticles()
     }
-    setSpinnerOn(false)
-    // ✨ implement
-    // You got this!
+    //$ ✨ implement
+    //$ You got this!
   }
 
 
@@ -208,6 +205,7 @@ export default function App() {
                 deleteArticle={deleteArticle}
                 updateArticle={updateArticle}
                 currentArticleId={currentArticleId}
+                setCurrentArticleId={setCurrentArticleId}
               />
             </>
           } />
