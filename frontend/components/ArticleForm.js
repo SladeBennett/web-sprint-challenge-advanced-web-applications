@@ -40,7 +40,6 @@ export default function ArticleForm(props) {
       setValues(initialFormValues)
     } else if (currentArticleId) {
       setSpinnerOn(true)
-      console.log(2, currentArticleId, values)
       updateArticle(currentArticleId, values)
       setValues(initialFormValues)
     }

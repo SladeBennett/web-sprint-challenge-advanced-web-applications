@@ -18,7 +18,6 @@ export default function App() {
   const [spinnerOn, setSpinnerOn] = useState(false)
 
   const token = localStorage.getItem('token')
-
   // ✨ Research `useNavigate` in React Router v.6
   const navigate = useNavigate()
   const redirectToLogin = () => { navigate('/') }
@@ -44,10 +43,8 @@ export default function App() {
       )
       if (data.token) {
         localStorage.setItem('token', data.token)
-        setMessage(data.message)
         redirectToArticles()
       }
-      setSpinnerOn(false)
     } catch (err) {
       if (err?.response?.status == 401) {
         logout()
@@ -60,14 +57,11 @@ export default function App() {
     //$ put the server success message in its proper state, and redirect
     //$ to the Articles screen. Don't forget to turn off the spinner!
   }
-
-
+  
   const getArticles = async () => {
-    //setMessage('')
     if (!token) {
       logout()
     } else {
-      setSpinnerOn(true)
       try {
         const response = await axios.get(
           articlesUrl,
@@ -105,8 +99,8 @@ export default function App() {
           article,
           { headers: { Authorization: token } }
         )
-        setSpinnerOn(false)
         setMessage(response.data.message)
+        setSpinnerOn(false)
       }
       catch (error) {
         if (error?.response?.status == 401) {
@@ -127,7 +121,6 @@ export default function App() {
     if (!token) {
       logout()
     } else {
-      console.log(1, currentArticleId, article)
       try {
         const response = await axios.put(
           `http://localhost:9000/api/articles/${currentArticleId}`,
@@ -151,10 +144,10 @@ export default function App() {
 
   const deleteArticle = async (article_id) => {
     setMessage('')
+    setSpinnerOn(true)
     if (!token) {
       logout()
     } else {
-      setSpinnerOn(true)
       try {
         const response = await axios.delete(
           `http://localhost:9000/api/articles/${article_id}`,
@@ -175,9 +168,9 @@ export default function App() {
 
 
   return (
-    // ✨ fix the JSX: `Spinner`, $`Message`, $`LoginForm`, `ArticleForm` and `Articles` expect props ❗
+    //$ ✨ fix the JSX: $`Spinner`, $`Message`, $`LoginForm`, $`ArticleForm` and $`Articles` expect props ❗
     <>
-      <Spinner spinnerOn={spinnerOn} />
+      <Spinner on={spinnerOn} />
       <Message message={message} />
       <button id="logout" onClick={logout}>Logout from app</button>
       <div id="wrapper" style={{ opacity: spinnerOn ? "0.25" : "1" }}> {/* <-- do not change this line */}
