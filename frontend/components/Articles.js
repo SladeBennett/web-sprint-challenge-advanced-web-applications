@@ -5,7 +5,7 @@ import PT from 'prop-types'
 export default function Articles(props) {
   const navigate = useNavigate()
   //$ ✨ where are my props? Destructure them here
-  const { articles, getArticles, deleteArticle, updateArticle } = props
+  const { articles, getArticles, deleteArticle, updateArticle, currentArticleId } = props
   const token = localStorage.getItem('token')
   if (!token) {
     navigate('/')
@@ -15,21 +15,24 @@ export default function Articles(props) {
   
   useEffect(() => {
     getArticles()
-    // ✨ grab the articles here, on first render only
+    //$ ✨ grab the articles here, on first render only
   }, [])
   
 
   return (
-    // ✨ fix the JSX: replace `Function.prototype` with actual functions
-    // and use the articles prop to generate articles
+    //$ ✨ fix the JSX: replace `Function.prototype` with actual functions
+    //$ and use the articles prop to generate articles
     <div className="articles">
       <h2>Articles</h2>
       {
         !articles.length
           ? 'No articles yet'
           : articles.map(art => {
-            const eliminateArt = (id) => {
+            const eliminateArt = () => {
               deleteArticle(art.article_id)
+            }
+            const changeArt = () => {
+              updateArticle(art)
             }
             return (
               <div className="article" key={art.article_id}>
@@ -39,8 +42,8 @@ export default function Articles(props) {
                   <p>Topic: {art.topic}</p>
                 </div>
                 <div>
-                  <button disabled={false} onClick={updateArticle}>Edit</button>
-                  <button disabled={false} onClick={eliminateArt}>Delete</button>
+                  <button disabled={currentArticleId ? true : false} onClick={changeArt}>Edit</button>
+                  <button disabled={currentArticleId ? true : false} onClick={eliminateArt}>Delete</button>
                 </div>
               </div>
             )

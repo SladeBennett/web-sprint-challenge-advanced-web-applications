@@ -8,8 +8,8 @@ import Spinner from './Spinner'
 import axios from 'axios'
 
 
-const articlesUrl = 'http://localhost:3000/api/articles'
-const loginUrl = 'http://localhost:3000/api/login'
+const articlesUrl = 'http://localhost:9000/api/articles'
+const loginUrl = 'http://localhost:9000/api/login'
 
 export default function App() {
   const [message, setMessage] = useState('')
@@ -40,7 +40,7 @@ export default function App() {
     setSpinnerOn(true)
     try {
       const { data } = await axios.post(
-        'http://localhost:9000/api/login/', { username, password }
+        loginUrl, { username, password }
       )
       if (data.token) {
         localStorage.setItem('token', data.token)
@@ -70,7 +70,7 @@ export default function App() {
       setSpinnerOn(true)
       try {
         const response = await axios.get(
-          'http://localhost:9000/api/articles',
+          articlesUrl,
           { headers: { Authorization: token } }
         )
         setArticles(response.data.articles)
@@ -83,7 +83,7 @@ export default function App() {
       }
       setSpinnerOn(false)
     }
-    // ✨ implement
+    //$ ✨ implement
     //$ We should flush the message state, turn on the spinner
     //$ and launch an authenticated request to the proper endpoint.
     //$ On success, we should set the articles in their proper state and
@@ -101,10 +101,11 @@ export default function App() {
       setSpinnerOn(true)
       try {
         const response = await axios.post(
-          'http://localhost:9000/api/articles',
+          articlesUrl,
           article,
           { headers: { Authorization: token } }
         )
+        setSpinnerOn(false)
         setMessage(response.data.message)
       }
       catch (error) {
@@ -112,7 +113,6 @@ export default function App() {
           logout()
         }
       }
-      setSpinnerOn(false)
     }
     getArticles()
     //$ ✨ implement
@@ -121,11 +121,13 @@ export default function App() {
     //$ to inspect the response from the server.
   }
 
+
   const updateArticle = ({ article_id, article }) => {
-    console.log(`You updated`)
+    setCurrentArticleId(article_id)
     // ✨ implement
     // You got this!
   }
+
 
   const deleteArticle = async (article_id) => {
     setMessage('')
@@ -133,7 +135,7 @@ export default function App() {
       logout()
     } else {
       setSpinnerOn(true)
-      try{
+      try {
         const response = await axios.delete(
           `http://localhost:9000/api/articles/${article_id}`,
           { headers: { Authorization: token } }
@@ -148,12 +150,12 @@ export default function App() {
       getArticles()
     }
     setSpinnerOn(false)
-    // ✨ implement
+    //$ ✨ implement
   }
 
 
   return (
-    // ✨ fix the JSX: `Spinner`, `Message`, `LoginForm`, `ArticleForm` and `Articles` expect props ❗
+    // ✨ fix the JSX: `Spinner`, $`Message`, $`LoginForm`, `ArticleForm` and `Articles` expect props ❗
     <>
       <Spinner spinnerOn={spinnerOn} />
       <Message message={message} />
@@ -169,8 +171,10 @@ export default function App() {
           <Route path="articles" element={
             <>
               <ArticleForm
+                articles={articles}
                 postArticle={postArticle}
-                currentArticle={currentArticleId}
+                currentArticleId={currentArticleId}
+                setCurrentArticleId={setCurrentArticleId}
               />
               <Articles
                 logout={logout}
@@ -178,6 +182,7 @@ export default function App() {
                 articles={articles}
                 deleteArticle={deleteArticle}
                 updateArticle={updateArticle}
+                currentArticleId={currentArticleId}
               />
             </>
           } />
