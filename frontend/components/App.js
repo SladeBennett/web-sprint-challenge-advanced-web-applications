@@ -17,6 +17,7 @@ export default function App() {
   const [currentArticleId, setCurrentArticleId] = useState()
   const [spinnerOn, setSpinnerOn] = useState(false)
 
+  const token = localStorage.getItem('token')
 
   // ✨ Research `useNavigate` in React Router v.6
   const navigate = useNavigate()
@@ -62,7 +63,6 @@ export default function App() {
 
 
   const getArticles = async () => {
-    const token = localStorage.getItem('token')
     setMessage('')
     if (!token) {
       logout()
@@ -87,16 +87,35 @@ export default function App() {
     //$ We should flush the message state, turn on the spinner
     //$ and launch an authenticated request to the proper endpoint.
     //$ On success, we should set the articles in their proper state and
-    // put the server success message in its proper state.
+    //$ put the server success message in its proper state.
     //$ If something goes wrong, check the status of the response:
     //$ if it's a 401 the token might have gone bad, and we should redirect to login.
     //$ Don't forget to turn off the spinner!
   }
 
-  console.log(articles)
-
-
-  const postArticle = article => {
+  const postArticle = async (article) => {
+    console.log('You posted')
+    setMessage('')
+    if (!token) {
+      logout()
+    } else {
+      setSpinnerOn(true)
+      try {
+        const response = await axios.post(
+          'http://localhost:9000/api/articles',
+          article,
+          { headers: { Authorization: token } }
+        )
+        setMessage(response.data.message)
+      }
+      catch (error) {
+        if (error?.response?.status == 401) {
+          logout()
+        }
+      }
+      setSpinnerOn(false)
+    }
+    getArticles()
     // ✨ implement
     // The flow is very similar to the `getArticles` function.
     // You'll know what to do! Use log statements or breakpoints
@@ -104,13 +123,16 @@ export default function App() {
   }
 
   const updateArticle = ({ article_id, article }) => {
+    console.log(`You updated`)
     // ✨ implement
     // You got this!
   }
 
-  const deleteArticle = article_id => {
+  const deleteArticle = (article_id) => {
     // ✨ implement
+    console.log('You deleted')
   }
+
 
   return (
     // ✨ fix the JSX: `Spinner`, `Message`, `LoginForm`, `ArticleForm` and `Articles` expect props ❗
@@ -128,8 +150,17 @@ export default function App() {
           <Route path="/" element={<LoginForm login={login} />} />
           <Route path="articles" element={
             <>
-              <ArticleForm />
-              <Articles logout={logout} getArticles={getArticles} articles={articles}/>
+              <ArticleForm
+                postArticle={postArticle}
+                currentArticle={currentArticleId}
+              />
+              <Articles
+                logout={logout}
+                getArticles={getArticles}
+                articles={articles}
+                deleteArticle={deleteArticle}
+                updateArticle={updateArticle}
+              />
             </>
           } />
         </Routes>

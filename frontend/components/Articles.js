@@ -1,18 +1,21 @@
 import React, { useEffect } from 'react'
-import { Navigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import PT from 'prop-types'
 
 export default function Articles(props) {
+  const navigate = useNavigate()
   //$ ✨ where are my props? Destructure them here
-  const { articles } = props
+  const { articles, getArticles, deleteArticle, updateArticle } = props
   const token = localStorage.getItem('token')
-  if (!token) {Navigate('http://localhost:9000/api/login')}
-  // ✨ implement conditional logic: if no token exists
-  // we should render a Navigate to login screen (React Router v.6)
+  if (!token) {
+    navigate('/')
+  }
+  //$ ✨ implement conditional logic: if no token exists
+  //$ we should render a Navigate to login screen (React Router v.6)
   
   
   useEffect(() => {
-    props.getArticles()
+    getArticles()
     // ✨ grab the articles here, on first render only
   }, [])
   
@@ -34,8 +37,8 @@ export default function Articles(props) {
                   <p>Topic: {art.topic}</p>
                 </div>
                 <div>
-                  <button disabled={true} onClick={Function.prototype}>Edit</button>
-                  <button disabled={true} onClick={Function.prototype}>Delete</button>
+                  <button disabled={false} onClick={updateArticle}>Edit</button>
+                  <button disabled={false} onClick={deleteArticle}>Delete</button>
                 </div>
               </div>
             )
