@@ -13,7 +13,6 @@ export default function Articles(props) {
   //$ ✨ implement conditional logic: if no token exists
   //$ we should render a Navigate to login screen (React Router v.6)
   
-  
   useEffect(() => {
     getArticles()
     // ✨ grab the articles here, on first render only
@@ -29,6 +28,9 @@ export default function Articles(props) {
         !articles.length
           ? 'No articles yet'
           : articles.map(art => {
+            const eliminateArt = (id) => {
+              deleteArticle(art.article_id)
+            }
             return (
               <div className="article" key={art.article_id}>
                 <div>
@@ -38,7 +40,7 @@ export default function Articles(props) {
                 </div>
                 <div>
                   <button disabled={false} onClick={updateArticle}>Edit</button>
-                  <button disabled={false} onClick={deleteArticle}>Delete</button>
+                  <button disabled={false} onClick={eliminateArt}>Delete</button>
                 </div>
               </div>
             )

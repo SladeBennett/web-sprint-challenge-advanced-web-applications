@@ -63,7 +63,7 @@ export default function App() {
 
 
   const getArticles = async () => {
-    setMessage('')
+    //setMessage('')
     if (!token) {
       logout()
     } else {
@@ -74,7 +74,7 @@ export default function App() {
           { headers: { Authorization: token } }
         )
         setArticles(response.data.articles)
-        setMessage(response.data.message)
+        if (!message || message.includes('Welcome back,')) setMessage(response.data.message)
       }
       catch (error) {
         if (error?.response?.status == 401) {
@@ -94,7 +94,6 @@ export default function App() {
   }
 
   const postArticle = async (article) => {
-    console.log('You posted')
     setMessage('')
     if (!token) {
       logout()
@@ -116,10 +115,10 @@ export default function App() {
       setSpinnerOn(false)
     }
     getArticles()
-    // ✨ implement
-    // The flow is very similar to the `getArticles` function.
-    // You'll know what to do! Use log statements or breakpoints
-    // to inspect the response from the server.
+    //$ ✨ implement
+    //$ The flow is very similar to the `getArticles` function.
+    //$ You'll know what to do! Use log statements or breakpoints
+    //$ to inspect the response from the server.
   }
 
   const updateArticle = ({ article_id, article }) => {
@@ -128,9 +127,28 @@ export default function App() {
     // You got this!
   }
 
-  const deleteArticle = (article_id) => {
+  const deleteArticle = async (article_id) => {
+    setMessage('')
+    if (!token) {
+      logout()
+    } else {
+      setSpinnerOn(true)
+      try{
+        const response = await axios.delete(
+          `http://localhost:9000/api/articles/${article_id}`,
+          { headers: { Authorization: token } }
+        )
+        setMessage(response.data.message)
+      }
+      catch (error) {
+        if (error?.response?.status == 401) {
+          logout()
+        }
+      }
+      getArticles()
+    }
+    setSpinnerOn(false)
     // ✨ implement
-    console.log('You deleted')
   }
 
 
