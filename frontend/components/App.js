@@ -122,8 +122,31 @@ export default function App() {
   }
 
 
-  const updateArticle = ({ article_id, article }) => {
-    setCurrentArticleId(article_id)
+  const updateArticle = async ({ article_id, article }) => {
+    console.log(article)
+    
+    setMessage('')
+    if (!token) {
+      logout()
+    } else {
+      setCurrentArticleId(article_id)
+      //setSpinnerOn(true)
+      try {
+        const response = await axios.put(
+          `http://localhost:9000/api/articles/${article_id}`,
+          article,
+          { headers: { Authorization: token } }
+        )
+        setMessage(response.data.message)
+      }
+      catch (error) {
+        if (error?.response?.status == 401) {
+          logout()
+        }
+      }
+      getArticles()
+    }
+    setSpinnerOn(false)
     // ✨ implement
     // You got this!
   }
@@ -171,6 +194,8 @@ export default function App() {
           <Route path="articles" element={
             <>
               <ArticleForm
+                setSpinnerOn={setSpinnerOn}
+                updateArticle={updateArticle}
                 articles={articles}
                 postArticle={postArticle}
                 currentArticleId={currentArticleId}
